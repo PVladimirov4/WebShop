@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36109.1 d17.14
+VisualStudioVersion = 17.14.36109.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShopApp", "WebShopApp\WebShopApp.csproj", "{D4D09758-57EF-4963-85BA-63425906F705}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebShopApp", "WebShopApp\WebShopApp.csproj", "{D4D09758-57EF-4963-85BA-63425906F705}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShopApp.Infrastructure", "WebShopApp.Infrastructure\WebShopApp.Infrastructure.csproj", "{BB2B01A3-643E-4B96-AB7D-7B2479E6FEB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebShopApp.Infrastructure", "WebShopApp.Infrastructure\WebShopApp.Infrastructure.csproj", "{BB2B01A3-643E-4B96-AB7D-7B2479E6FEB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShopApp.Core", "WebShopApp.Core\WebShopApp.Core.csproj", "{90763B44-07F0-48E4-8525-D6BD0CA97F93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{BB2B01A3-643E-4B96-AB7D-7B2479E6FEB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB2B01A3-643E-4B96-AB7D-7B2479E6FEB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB2B01A3-643E-4B96-AB7D-7B2479E6FEB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90763B44-07F0-48E4-8525-D6BD0CA97F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90763B44-07F0-48E4-8525-D6BD0CA97F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90763B44-07F0-48E4-8525-D6BD0CA97F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90763B44-07F0-48E4-8525-D6BD0CA97F93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
