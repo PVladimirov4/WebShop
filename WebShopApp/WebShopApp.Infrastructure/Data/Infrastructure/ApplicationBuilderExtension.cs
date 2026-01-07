@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using WebShopApp.Infrastructure.Data.Domain;
 
-namespace WebShopApp.Infrastructure.Data.Infrastrucutre
+namespace WebShopApp.Infrastructure.Data.Infrastructure
 {
     public static class ApplicationBuilderExtension
     {
@@ -31,13 +29,55 @@ namespace WebShopApp.Infrastructure.Data.Infrastrucutre
 
             return app;
         }
+
+        private static void SeedCategories(ApplicationDbContext dataCategory)
+        {
+            if (dataCategory.Categories.Any())
+            {
+                return;
+            }
+            dataCategory.Categories.AddRange(new[]
+            {
+              new Category { CategoryName="Laptop"},
+              new Category { CategoryName="Computer"},
+              new Category { CategoryName="Monitor"},
+              new Category { CategoryName="Accessory"},
+              new Category { CategoryName="TV"},
+              new Category { CategoryName="Mobile phone"},
+              new Category { CategoryName="Smart watch"}
+            });
+            dataCategory.SaveChanges();
+        }
+
+        private static void SeedBrands(ApplicationDbContext dataBrand)
+        {
+            if (dataBrand.Brands.Any())
+            {
+                return;
+            }
+            dataBrand.Brands.AddRange(new[]
+            {
+              new Brand { BrandName="Acer"},
+              new Brand { BrandName="Asus"},
+              new Brand { BrandName="Apple"},
+              new Brand { BrandName="Dell"},
+              new Brand { BrandName="HP"},
+              new Brand { BrandName="Huawei"},
+              new Brand { BrandName="Lenovo"},
+              new Brand { BrandName="Samsung"},
+
+            });
+            dataBrand.SaveChanges();
+        }
         private static async Task RoleSeeder(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
             string[] roleNames = { "Administrator", "Client" };
+
             IdentityResult roleResult;
 
-            foreach(var role in roleNames)
+            foreach (var role in roleNames)
             {
                 var roleExist = await roleManager.RoleExistsAsync(role);
 
@@ -53,62 +93,25 @@ namespace WebShopApp.Infrastructure.Data.Infrastrucutre
 
             if (await userManager.FindByNameAsync("admin") == null)
             {
-                ApplicationUser user = new ApplicationUser();
-                user.FirstName = "admin";
-                user.LastName = "admin";
-                user.UserName = "admin";
-                user.Email = "admin@admin.com";
-                user.Address = "admin address";
-                user.PhoneNumber = "0888888888";
+                ApplicationUser user = new ApplicationUser()
+                {
+                    UserName = "admin",
+                    FirstName = "admin",
+                    LastName = "admin",
+                    Email = "admin@admin.com",
+                    Address = "admin address",
+                    PhoneNumber = "0888888888"
+                };
 
                 var result = await userManager.CreateAsync(user, "Admin123456");
 
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(user, "Administrator").Wait();
+                    await userManager.AddToRoleAsync(user, "Administrator");
                 }
             }
         }
-        private static void SeedCategories(ApplicationDbContext dataCategory)
-        {
-            if (dataCategory.Categories.Any())
-            {
-                return;
-            }
 
-            dataCategory.Categories.AddRange(new[]
-            {
-                new Category { CategoryName = "Laptop" },
-                new Category { CategoryName = "Computer" },
-                new Category { CategoryName = "Monitor" },
-                new Category { CategoryName = "Accessory" },
-                new Category { CategoryName = "TV" },
-                new Category { CategoryName = "Mobile phone" },
-                new Category { CategoryName = "Smart watch" }
-            });
 
-            dataCategory.SaveChanges();
-        }
-        private static void SeedBrands(ApplicationDbContext dataBrand)
-        {
-            if (dataBrand.Brands.Any())
-            {
-                return;
-            }
-
-            dataBrand.Brands.AddRange(new[]
-            {
-               new Brand { BrandName = "Acer" },
-               new Brand { BrandName = "Asus" },
-               new Brand { BrandName = "Apple" },
-               new Brand { BrandName = "Dell" },
-               new Brand { BrandName = "HP" },
-               new Brand { BrandName = "Huawei" },
-               new Brand { BrandName = "Lenovo" },
-               new Brand { BrandName = "Samsung" }
-            });
-
-            dataBrand.SaveChanges();
-        }
     }
 }

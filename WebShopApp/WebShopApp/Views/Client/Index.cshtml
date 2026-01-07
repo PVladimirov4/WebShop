@@ -1,26 +1,19 @@
 ﻿@model IEnumerable<WebShopApp.Models.Client.ClientIndexVM>
+
 @{
     ViewData["Title"] = "Index";
 }
+
 <h1>Clients</h1>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+            <th>@Html.DisplayNameFor(model => model.LastName)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
             <th></th>
         </tr>
     </thead>
@@ -28,27 +21,53 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
+                <td>@Html.DisplayFor(modelItem => item.LastName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn-danger">Delete</a>
-
+                    <button type="button"
+                            class="btn btn-danger delete-client-btn"
+                            data-userid="@item.Id"
+                            data-username="@item.UserName">
+                        Delete
+                    </button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.delete-client-btn').on('click', function () {
+                var userId = $(this).data('userid');
+                var userName = $(this).data('username');
+
+                // AJAX проверка дали клиентът има поръчки
+                $.ajax({
+                    url: '@Url.Action("HasOrders", "Client")',
+                    type: 'GET',
+                    data: { userId: userId },
+                    success: function (response) {
+                        if (response.hasOrders) {
+                            // Ако има поръчки – показваме съобщение
+                            alert('Клиентът "' + userName + '" има направени поръчки и не може да бъде изтрит!');
+                        } else {
+                            // Ако няма поръчки – потвърждение и препращане към Delete страницата
+                            if (confirm('Сигурни ли сте, че искате да изтриете клиента "' + userName + '"?')) {
+                                window.location.href = '@Url.Action("Delete", "Client")' + '?id=' + userId;
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert('Възникна грешка при свързването със сървъра. Опитайте отново по-късно.');
+                    }
+                });
+            });
+        });
+    </script>
+}

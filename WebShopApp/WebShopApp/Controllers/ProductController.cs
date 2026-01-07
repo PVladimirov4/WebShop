@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 using WebShopApp.Core.Contracts;
 using WebShopApp.Infrastructure.Data.Domain;
 using WebShopApp.Models.Brand;
@@ -13,17 +12,19 @@ namespace WebShopApp.Controllers
     [Authorize(Roles = "Administrator")]
     public class ProductController : Controller
     {
-
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IBrandService _brandService;
 
+        // Конструктор за DI
         public ProductController(IProductService productService, ICategoryService categoryService, IBrandService brandService)
         {
-            this._productService = productService;
-            this._categoryService = categoryService;
-            this._brandService = brandService;
+            _productService = productService;
+            _categoryService = categoryService;
+            _brandService = brandService;
         }
+
+
 
 
         // GET: ProductController
@@ -31,19 +32,20 @@ namespace WebShopApp.Controllers
         public ActionResult Index(string searchStringCategoryName, string searchStringBrandName)
         {
             List<ProductIndexVM> products = _productService.GetProducts(searchStringCategoryName, searchStringBrandName)
-                .Select(product => new ProductIndexVM
-                {
-                    Id = product.Id,
-                    ProductName = product.ProductName,
-                    BrandId = product.BrandId,
-                    BrandName = product.Brand.BrandName,
-                    CategoryId = product.CategoryId,
-                    CategoryName = product.Category.CategoryName,
-                    Picture = product.Picture,
-                    Quantity = product.Quantity,
-                    Price = product.Price,
-                    Discount = product.Discount
-                }).ToList();
+            .Select(product => new ProductIndexVM
+            {
+            Id = product.Id,
+            ProductName = product.ProductName,
+            BrandId = product.BrandId,
+            BrandName = product.Brand.BrandName,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category.CategoryName,
+            Picture = product.Picture,
+            Quantity = product.Quantity,
+            Price = product.Price,
+            Discount = product.Discount
+            })
+            .ToList();
 
             return this.View(products);
         }
@@ -52,24 +54,29 @@ namespace WebShopApp.Controllers
         [AllowAnonymous]
         public ActionResult Details(int id)
         {
+            // 1. Извличане на продукта
             Product item = _productService.GetProductById(id);
             if (item == null)
             {
                 return NotFound();
             }
+
+            // 2. Попълване на ViewModel за показване
             ProductDetailsVM product = new ProductDetailsVM()
             {
                 Id = item.Id,
                 ProductName = item.ProductName,
                 BrandId = item.BrandId,
-                BrandName = item.Brand.BrandName,
+                BrandName = item.Brand.BrandName, // Изисква зареждане на Brand в Product entity
                 CategoryId = item.CategoryId,
-                CategoryName = item.Category.CategoryName,
+                CategoryName = item.Category.CategoryName, // Изисква зареждане на Category в Product entity
                 Picture = item.Picture,
                 Quantity = item.Quantity,
                 Price = item.Price,
                 Discount = item.Discount
             };
+
+            // 3. Връщане на View
             return View(product);
         }
 
@@ -77,19 +84,21 @@ namespace WebShopApp.Controllers
         public ActionResult Create()
         {
             var product = new ProductCreateVM();
-            product.Brands = _brandService.GetBrands()
-            .Select(x => new BrandPairVM()
-            {
-                     Id = x.Id,
-                     Name = x.BrandName,
 
-            }).ToList();
-            product.Categories = _categoryService.GetCategories()
-                .Select(x=> new Models.Category.CategoryPairVM()
+            product.Brands = _brandService.GetBrands()
+                .Select(x => new BrandPairVM()
                 {
-                    Id= x.Id,
+                    Id = x.Id,
+                    Name = x.BrandName
+                }).ToList();
+
+            product.Categories = _categoryService.GetCategories()
+                .Select(x => new CategoryPairVM()
+                {
+                    Id = x.Id,
                     Name = x.CategoryName
                 }).ToList();
+
             return View(product);
         }
 
@@ -100,37 +109,44 @@ namespace WebShopApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var createId = _productService.Create(product.ProductName, product.BrandId,
-                    product.CategoryId, product.Picture,
-                    product.Quantity, product.Price, product.Discount);
-                if (createId)
+                var createdId = _productService.Create(product.ProductName, product.BrandId,
+                product.CategoryId, product.Picture,
+                product.Quantity, product.Price, product.Discount);
+
+                if (createdId)
                 {
                     return RedirectToAction(nameof(Index));
                 }
             }
+
             return View();
+
         }
 
         // GET: ProductController/Edit/5
         public ActionResult Edit(int id)
         {
-           Product product = _productService.GetProductById(id);    
-            if(product == null)
+            Product product = _productService.GetProductById(id);
+            if (product == null)
             {
                 return NotFound();
             }
+
             ProductEditVM updatedProduct = new ProductEditVM()
             {
                 Id = product.Id,
                 ProductName = product.ProductName,
                 BrandId = product.BrandId,
+                //BrandName = product.Brand.BrandName,
                 CategoryId = product.CategoryId,
+                // CategoryName = product.Category.CategoryName,
                 Picture = product.Picture,
                 Quantity = product.Quantity,
                 Price = product.Price,
                 Discount = product.Discount
-
             };
+
+            // Снимка 2
             updatedProduct.Brands = _brandService.GetBrands()
                 .Select(b => new BrandPairVM()
                 {
@@ -138,6 +154,7 @@ namespace WebShopApp.Controllers
                     Name = b.BrandName
                 })
                 .ToList();
+
             updatedProduct.Categories = _categoryService.GetCategories()
                 .Select(c => new CategoryPairVM()
                 {
@@ -145,6 +162,7 @@ namespace WebShopApp.Controllers
                     Name = c.CategoryName
                 })
                 .ToList();
+
             return View(updatedProduct);
         }
 
@@ -154,16 +172,27 @@ namespace WebShopApp.Controllers
         public ActionResult Edit(int id, ProductEditVM product)
         {
             {
+                // Валидация на модела
                 if (ModelState.IsValid)
                 {
-                    var updated = _productService.Update(id, product.ProductName,
-                        product.BrandId, product.CategoryId, product.Picture,
-                        product.Quantity, product.Price, product.Discount);
+                    // Актуализиране на продукта чрез услугата
+                    var updated = _productService.Update(
+                        id,
+                        product.ProductName,
+                        product.BrandId,
+                        product.CategoryId,
+                        product.Picture,
+                        product.Quantity,
+                        product.Price,
+                        product.Discount
+                    );
 
                     if (updated)
                     {
+                        // Ако актуализацията е успешна, пренасочва към Index
                         return this.RedirectToAction("Index");
                     }
+                   
                 }
                 return View(product);
             }
@@ -178,6 +207,7 @@ namespace WebShopApp.Controllers
                 return NotFound();
             }
 
+            // Използва ProductDeleteVM за яснота, че това е за изтриване
             ProductDeleteVM product = new ProductDeleteVM()
             {
                 Id = item.Id,
@@ -208,10 +238,10 @@ namespace WebShopApp.Controllers
             }
             else
             {
-                return View();
+                return View(); // Връщане към страницата за изтриване при неуспех
             }
         }
-        public ActionResult Succes(int id)
+        public IActionResult Success()
         {
             return View();
         }

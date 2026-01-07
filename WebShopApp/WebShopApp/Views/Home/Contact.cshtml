@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Contacts";
+}
+
+<div class="container my-5">
+    <h1 class="display-5 text-center mb-4">Контакти</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Свържете се с нас</h4>
+                    <p>Ако имате въпроси, предложения или проблеми с поръчка – пишете ни!</p>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Информация за контакт</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Имейл:</strong> info@webshopapp.com</li>
+                                <li><strong>Телефон:</strong> +359 888 123 456</li>
+                                <li><strong>Работно време:</strong> Понеделник – Петък: 9:00 – 18:00 ч.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Форма за съобщение</h5>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Име</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Имейл</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Съобщение</label>
+                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Изпрати</button>
+                            </form>
+                            <small class="text-muted mt-2 d-block">Засега формата е само за демонстрация – съобщенията не се изпращат.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

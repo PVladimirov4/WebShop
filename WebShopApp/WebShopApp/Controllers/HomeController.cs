@@ -1,5 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+
+using System.Diagnostics;
+
 using WebShopApp.Models;
 
 namespace WebShopApp.Controllers
@@ -20,6 +22,11 @@ namespace WebShopApp.Controllers
 
         public IActionResult Privacy()
         {
+            return View();
+        }
+        public IActionResult Contact()
+        {
+            ViewData["Title"] = "Contacts";
             return View();
         }
 

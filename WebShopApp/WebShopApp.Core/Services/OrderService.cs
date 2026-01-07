@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
-
+﻿using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using WebShopApp.Core.Contracts;
 using WebShopApp.Infrastructure.Data;
 using WebShopApp.Infrastructure.Data.Domain;
@@ -24,7 +22,7 @@ namespace WebShopApp.Core.Services
         }
         public bool Create(int productId, string userId, int quantity)
         {
-            //намираме продукта по неговото id
+            //намираме продукта по неговото ID
             var product = this._context.Products.SingleOrDefault(x => x.Id == productId);
 
             //проверяваме дали има такъв продукт
@@ -62,12 +60,14 @@ namespace WebShopApp.Core.Services
 
         public List<Order> GetOrders()
         {
-            return _context.Orders.OrderByDescending(x => x.OrderDate).ToList();
+            return _context.Orders.OrderByDescending(x=> x.OrderDate).ToList();
         }
 
         public List<Order> GetOrdersByUser(string userId)
         {
-            throw new NotImplementedException();
+           return _context.Orders.Where(x=>x.UserId == userId)
+                .OrderByDescending(x=>x.OrderDate)
+                .ToList();
         }
 
         public bool RemoveById(int orderId)

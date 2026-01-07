@@ -4,7 +4,7 @@
 }
 <h1>Details</h1>
 <div>
-    <h4>ProductDetailsVM</h4>
+    
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -49,16 +49,14 @@
             @Html.DisplayNameFor(model => model.Discount)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Discount)
-
-            21
+@Html.DisplayFor(model => model.Discount)
 
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
+    <a asp-action="Index" class="btn btn-warning">Back to List</a>
 </div>
 @section Scripts {
     @{

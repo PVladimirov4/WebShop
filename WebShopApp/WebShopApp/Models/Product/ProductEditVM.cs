@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using System.ComponentModel.DataAnnotations;
-
+﻿using System.ComponentModel.DataAnnotations;
 using WebShopApp.Models.Brand;
 using WebShopApp.Models.Category;
 
@@ -30,7 +27,7 @@ namespace WebShopApp.Models.Product
         [Display(Name = "Picture")]
         public string Picture { get; set; } = null!;
 
-        [Range(0, 5000)]
+        [Range(0, 5000, ErrorMessage = "Количеството трябва да бъде между 0 и 5000.")]
         [Display(Name = "Quantity")]
         public int Quantity { get; set; }
 
@@ -40,5 +37,4 @@ namespace WebShopApp.Models.Product
         [Display(Name = "Discount")]
         public decimal Discount { get; set; }
     }
-    
 }

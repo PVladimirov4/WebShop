@@ -2,110 +2,140 @@
 @{
     ViewData["Title"] = "Index";
 }
-<h1>Index</h1>
 
-@if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
+<h1>Products</h1>
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
 {
     <p>
-        <a asp-action="Create">Create New</a>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
     </p>
 }
 
-<form asp-controller="Product" asp-action="Index" method="get">
-    <p>
-        Brand: <input type="text" name="SearchStringBrandName" />
-        Category: <input type="text" name="SearchStringCategoryName" />
-        <input type="submit" value="Filter" />
-    </p>
+<form asp-controller="Product" asp-action="Index" method="get" class="mb-4">
+    <div class="row g-2">
+        <div class="col">
+            <input type="text" name="SearchStringBrandName" class="form-control" placeholder="Brand" />
+        </div>
+        <div class="col">
+            <input type="text" name="SearchStringCategoryName" class="form-control" placeholder="Category" />
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
 
-            14
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
 
-            @*<th>
-            @Html.DisplayNameFor(model => model.BrandId)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.BrandName)
-            </th>
-            @*<th>
-            @Html.DisplayNameFor(model => model.CategoryId)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Picture)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Discount)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                @*<td>
-            @Html.DisplayFor(modelItem => item.BrandId)
-            </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.BrandName)
-                </td>
-                @*<td>
-            @Html.DisplayFor(modelItem => item.CategoryId)
-            </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.CategoryName)
-                </td>
-                <td>
-                    <img src="@Html.DisplayFor(modelItem => item.Picture)"
-                         alt="Image" width="100" />
-                    @*@Html.DisplayFor(modelItem => item.Pictute)*@
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Discount) %
-                </td>
-                <td>
+            <div class="col">
+                <div class="card h-100 text-center position-relative">
 
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a>
-
-                    @if (this.User.Identity.IsAuthenticated)
+                    @* BADGE ЗА НАМАЛЕНИЕ *@
+                    @if (item.Discount > 0)
                     {
-                    <a asp-action="Create" asp-controller="Order" asp-route-id="@item.Id" class="btn btn-warning">Order</a>
+                        <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                            -@item.Discount%
+                        </span>
                     }
-                    @if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
-                    {
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">R&lt</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                    }
-                   
 
-                </td>
-            </tr>
+                    @* КАРТИНКА *@
+                    <img src="@item.Picture"
+                         class="card-img-top p-3"
+                         alt="@item.ProductName"
+                         style="height:200px; object-fit:contain;" />
+
+                    <div class="card-body">
+
+                        @* ИМЕ *@
+                        <h6 class="card-title text-primary">
+                            @item.ProductName
+                        </h6>
+
+                        @* ЦЕНА *@
+                        @if (item.Discount > 0)
+                        {
+                            <div>
+                                <span class="text-muted text-decoration-line-through">
+                                    @item.Price.ToString("0.00") лв.
+                                </span>
+                                <span class="text-danger fw-bold ms-2">
+                                    @{
+                                        var discountedPrice =
+                                        item.Price - (item.Price * item.Discount / 100);
+                                    }
+                                    @discountedPrice.ToString("0.00") лв.
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="fw-bold">
+                                @item.Price.ToString("0.00") лв.
+                            </div>
+                        }
+
+                        @* НАЛИЧНОСТ *@
+                        @if (item.Quantity == 0)
+                        {
+                            <div class="text-danger fw-bold mt-3">Изчерпан</div>
+                        }
+                        else
+                        {
+                            <div class="text-success mt-2">Налични: @item.Quantity бр.</div>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-white border-0 d-flex flex-wrap justify-content-center gap-2">
+                        <a asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="btn btn-outline-primary btn-sm">
+                            Details
+                        </a>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if (item.Quantity > 0)
+                            {
+                                <a asp-action="Create"
+                                   asp-controller="Order"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-warning btn-sm">
+                                    Order
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-sm" disabled title="Продуктът е изчерпан">
+                                    Order
+                                </button>
+                            }
+                        }
+
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-outline-warning btn-sm">
+                                Edit
+                            </a>
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-outline-danger btn-sm">
+                                Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
